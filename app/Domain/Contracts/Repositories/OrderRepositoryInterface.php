@@ -1,0 +1,4 @@
+<?php
+namespace App\Domain\Contracts\Repositories;
+use App\Domain\Models\Cart;use App\Domain\Models\Order;use App\Domain\Models\CartItem;
+interface OrderRepositoryInterface{public function cartForCheckout(string $userId):?Cart;public function create(array $data):Order;public function addItem(Order $order,array $data):void;public function decrementStock(CartItem $item):void;public function incrementStock(string $productId,?string $variantId,int $quantity):void;public function incrementCoupon(object $coupon):void;public function recordCoupon(object $coupon,string $userId,string $orderId,float $discount):void;public function clearCart(Cart $cart):void;public function listForUser(string $userId);public function listAll();public function findForUser(string $userId,string $orderId):Order;public function lock(string $id):Order;}

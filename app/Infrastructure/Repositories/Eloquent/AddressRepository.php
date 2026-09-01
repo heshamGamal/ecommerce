@@ -1,0 +1,4 @@
+<?php
+namespace App\Infrastructure\Repositories\Eloquent;
+use App\Domain\Contracts\Repositories\AddressRepositoryInterface;use App\Domain\Models\UserAddress;
+class AddressRepository implements AddressRepositoryInterface{public function listForUser(string $userId):iterable{return UserAddress::where('user_id',$userId)->latest()->get();}public function findForUser(string $userId,string $id):UserAddress{return UserAddress::where('user_id',$userId)->findOrFail($id);}public function create(array $data):UserAddress{return UserAddress::create($data);}public function update(UserAddress $address,array $data):UserAddress{$address->update($data);return $address->fresh();}public function delete(UserAddress $address):void{$address->delete();}public function clearDefault(string $userId,?string $except=null):void{UserAddress::where('user_id',$userId)->when($except,fn($q)=>$q->where('id','!=',$except))->update(['is_default'=>false]);}}

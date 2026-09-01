@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers\Api\V1;
+use App\Application\Settings\DTOs\SettingData;use App\Application\Settings\Services\SettingService;use App\Http\Controllers\Controller;use App\Http\Requests\SettingRequest;use Illuminate\Http\JsonResponse;use Illuminate\Http\Request;
+class SettingController extends Controller{public function __construct(private readonly SettingService $service){}public function public(Request $r):JsonResponse{return response()->json(['status'=>'success','data'=>$this->service->public($r->query('group'))]);}public function admin(Request $r):JsonResponse{return response()->json(['status'=>'success','data'=>$this->service->admin($r->query('group'))]);}public function store(SettingRequest $r):JsonResponse{return response()->json(['status'=>'success','data'=>$this->service->save(SettingData::fromArray($r->validated()))]);}}

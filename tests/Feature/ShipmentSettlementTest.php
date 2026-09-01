@@ -1,0 +1,8 @@
+<?php
+namespace Tests\Feature;
+use App\Domain\Models\Order;use App\Domain\Models\Shipment;use App\Domain\Models\ShippingProvider;use App\Domain\Models\User;use Illuminate\Foundation\Testing\RefreshDatabase;use Tests\TestCase;
+class ShipmentSettlementTest extends TestCase
+{
+ use RefreshDatabase;
+ public function test_admin_can_settle_one_delivered_shipment_once():void{$this->seed();$admin=User::factory()->create()->assignRole('admin');$provider=ShippingProvider::create(['name'=>'Fast','code'=>'FAST','is_active'=>true]);$zoneId=\DB::table('shipping_zones')->insertGetId(['name'=>'Cairo','code'=>'CAI','created_at'=>now(),'updated_at'=>now()]);$order=Order::create(['order_number'=>'ORD-SETTLE-1','user_id'=>$admin->id,'subtotal'=>100,'grand_total'=>110,'shipping_cost'=>10,'shipping_full_name'=>'T','shipping_phone'=>'0100','shipping_city'=>'Cairo','shipping_address'=>'Street']);$shipment=Shipment::create(['order_id'=>$order->id,'shipping_provider_id'=>$provider->id,'shipping_zone_id'=>$zoneId,'status'=>'delivered','shipping_cost'=>10,'delivered_at'=>now()]);$id=$this->actingAs($admin)->postJson("/api/v1/admin/shipping/shipments/{$shipment->id}/settlement",['commission_rate'=>10])->assertCreated()->json('data.id');$this->assertDatabaseHas('shipping_settlements',['shipment_id'=>$shipment->id,'shipping_amount'=>10,'provider_amount'=>9,'commission_amount'=>1,'status'=>'pending']);$this->actingAs($admin)->postJson("/api/v1/admin/shipping/settlements/{$id}/settle")->assertOk()->assertJsonPath('data.status','settled');$this->actingAs($admin)->postJson("/api/v1/admin/shipping/settlements/{$id}/settle")->assertStatus(422);}
+}

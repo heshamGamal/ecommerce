@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers\Api\V1;
+use App\Application\Payments\DTOs\PaymentData;use App\Application\Payments\Services\PaymentService;use App\Http\Controllers\Controller;use App\Http\Requests\PaymentConfirmRequest;use App\Domain\Models\Order;use App\Domain\Models\PaymentTransaction;use Illuminate\Http\JsonResponse;use Illuminate\Http\Request;
+class PaymentController extends Controller{public function __construct(private readonly PaymentService $service){}public function cod(Request $r,string $order):JsonResponse{$o=Order::where('user_id',$r->user()->id)->findOrFail($order);return response()->json(['status'=>'success','data'=>$this->service->createCod($o)],201);}public function confirm(PaymentConfirmRequest $r,string $payment):JsonResponse{$d=PaymentData::fromArray($r->validated());return response()->json(['status'=>'success','data'=>$this->service->confirm($payment,(string)$r->user()->id,$d->status,$d->transactionId,$d->payload)]);}}
