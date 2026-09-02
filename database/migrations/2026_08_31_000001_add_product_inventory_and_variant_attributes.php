@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table): void {
             $table->decimal('sale_price', 10, 2)->unsigned()->nullable()->after('compare_price');
             $table->timestamp('sale_ends_at')->nullable()->after('sale_price');
-            $table->unsignedInteger('stock')->default(0)->after('sku');
+            
         });
 
         Schema::table('product_variants', function (Blueprint $table): void {
